@@ -1,0 +1,241 @@
+package com.cg.banking.test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+
+
+import com.cg.banking.beans.Account;
+import com.cg.banking.beans.Customer;
+import com.cg.banking.beans.Transaction;
+import com.cg.banking.daoservices.BankingDAOServicesImpl;
+import com.cg.banking.exceptions.AccountNotFoundException;
+import com.cg.banking.exceptions.BankingServicesDownException;
+import com.cg.banking.exceptions.CustomerNotFoundException;
+import com.cg.banking.exceptions.InvalidAccountTypeException;
+import com.cg.banking.exceptions.InvalidAmountException;
+import com.cg.banking.services.BankingServices;
+import com.cg.banking.services.BankingServicesImpl;
+
+
+public class BankingServiceTest {
+	
+private static BankingServices bankingServices;
+	
+	@BeforeClass
+	public static void setUpPayrollServices(){
+		bankingServices = new BankingServicesImpl();
+	}
+	
+		@Before
+		public void setUpTestData ()
+		{
+			BankingDAOServicesImpl.customers.put(1000, new Customer(1000,"satish","mahajan","sm@capgi.com","ABCD1234","abcd","Pune",new Account(1, "SAVINGS", 5000, 1234, "ACTIVE" , 0, new Transaction(1, 1000, "DEPOSIT"))));
+			BankingDAOServicesImpl.customers.put(1001, new Customer(1001,"monica","dabas","md@capgi.com","ABASH234","tyrt","Pune",new Account(2, "CURRENT", 6000, 4234, "ACTIVE" , 0, new Transaction(2, 6000, "WITHDRAW"))));
+			BankingDAOServicesImpl.CUSTOMER_ID_COUNTER =1001;
+			BankingDAOServicesImpl.ACCOUNT_ID_COUNTER=2;
+		}
+			 
+
+	
+	@Test(expected=AccountNotFoundException.class)
+	public void testGetAccountDetailsForInvalidAccountId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		
+		bankingServices.getAccountDetails(1000, 4545454);
+		
+	}
+		
+	@Test 
+	public void testGetAccountDataForValidAccountId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		Account expectedAccount = new Account(1, "SAVINGS", 5000, 1234, "ACTIVE" , 0, new Transaction(1, 1000, "DEPOSIT"));
+		Account actualAccount = bankingServices.getAccountDetails(1000, 1);
+		assertEquals(expectedAccount, actualAccount);
+	}
+	
+	@Test(expected=AccountNotFoundException.class)
+	public void testGetAccountDetailsForInvalidCustomerId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		
+		bankingServices.getAccountDetails(1089, 1);
+		
+	}
+		
+	@Test 
+	public void testGetAccountDataForValidCustomerId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		Account expectedAccount = new Account(1, "SAVINGS", 5000, 1234, "ACTIVE" , 0, new Transaction(1, 1000, "DEPOSIT"));
+		Account actualAccount = bankingServices.getAccountDetails(1000, 1);
+		assertEquals(expectedAccount, actualAccount);
+	}
+	
+	@Test
+	public void testGetAllCustomerDetails() throws BankingServicesDownException{
+		List<Customer> expectedCustomerList = new ArrayList<>(BankingDAOServicesImpl.customers.values());
+		List<Customer>actualCustomerList = bankingServices.getAllCustomerDetails();
+		assertEquals(expectedCustomerList, actualCustomerList);
+	}
+	
+	
+	@Test (expected=AccountNotFoundException.class)
+	public void testGetAllAccountDetailsForInvalidCustomerId() throws BankingServicesDownException, CustomerNotFoundException{
+		
+		bankingServices.getCustomerAllAccountDetails(1234);
+	}
+	
+	
+	
+	@Test
+	public void testGetAllAccountDetailsForValidCustomerId() throws CustomerNotFoundException, BankingServicesDownException{
+		List<Account> expectedAccountList = new ArrayList<>(bankingServices.getCustomerDetails(1000).accounts.values());
+		List<Account>actualAccountList = bankingServices.getCustomerAllAccountDetails(1000);
+		assertEquals(expectedAccountList, actualAccountList);
+	}
+	
+	@Test (expected=AccountNotFoundException.class)
+	public void testGetAllTransactionDetailsForInvalidAccountNo() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException{
+		
+		bankingServices.getAccountAllTransaction(123);
+	}
+	
+	
+	
+	@Test
+	public void testGetAllTransactionDetailsForValidAccoutnNo() throws CustomerNotFoundException, BankingServicesDownException, AccountNotFoundException{
+		List<Transaction> expectedTransactionList = new ArrayList<>(bankingServices.getAccountDetails(1000, 1).transactions.values());
+		List<Transaction>actualTransactionList = bankingServices.getAccountAllTransaction(1);
+		assertEquals(expectedTransactionList, actualTransactionList);
+	}
+	
+	@Test(expected=CustomerNotFoundException.class)
+	public void testGetCustomerDetailsForInvalidCustomerId() throws CustomerNotFoundException, BankingServicesDownException{
+		bankingServices.getCustomerDetails(1234);
+	}
+	
+	@Test 
+	public void testGetCustomerDataForValidCustomerId() throws CustomerNotFoundException, BankingServicesDownException{
+		Customer expectedCustomer = new Customer(1000,"satish","mahajan","sm@capgi.com","ABCD1234","abcd","Pune",new Account(1, "SAVINGS", 5000, 1234, "ACTIVE" , 0, new Transaction(1, 1000, "DEPOSIT")));
+		Customer actualCustomer = bankingServices.getCustomerDetails(1000);
+		assertEquals(expectedCustomer, actualCustomer);
+	}
+	
+	
+	@Test 
+	public void testAcceptAssociateDetailsForValidData() throws BankingServicesDownException{
+		int expectedCustomerId =1002;
+		int actualCustomerId =bankingServices.acceptCustomerDetails("ret", "poiuy", "abc@gmail.com", "DHJG34", 201301, "NOIDA","uttar opradehs", 201301, "noida", "uttar pradesh") ;
+		assertEquals(expectedCustomerId, actualCustomerId);
+	}
+	
+	@Test(expected=InvalidAmountException.class)
+	public void testOpenAccountForInvalidAmount() throws CustomerNotFoundException, BankingServicesDownException, InvalidAmountException, InvalidAccountTypeException{
+		bankingServices.openAccount(-9876, "savings");
+	}
+	
+	@Test 
+	public void testOpenAccountForValidData() throws BankingServicesDownException, InvalidAmountException, CustomerNotFoundException, InvalidAccountTypeException{
+		int expectedAccountId =3;
+		int actualAccountId =bankingServices.openAccount(2345, "savings");
+		assertEquals(expectedAccountId, actualAccountId);
+	}
+	
+	@Test(expected=CustomerNotFoundException.class)
+	public void testCalculateNetSalaryForInvalidAssociateId() throws CustomerNotFoundException, BankingServicesDownException{
+		bankingServices.getAllCustomerDetails();
+	}
+	
+	@Test 
+	public void testCalculateNetSalaryForValidAssociateId(){
+		fail();
+	}
+	
+	@Test
+	public void testGetAllAssociatesDetails() throws CustomerNotFoundException,BankingServicesDownException{
+		List<Customer> expectedAssociateList = new ArrayList<>(BankingDAOServicesImpl.customers.values());
+		List<Customer>actualAssociateList = bankingServices.getAllCustomerDetails();
+		assertEquals(expectedAssociateList, actualAssociateList);
+	}
+	
+	
+	@Test(expected=AccountNotFoundException.class)
+	public void testGetCustomerAccountStatusForInvalidCustomerId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		
+		bankingServices.getAccountDetails(1089, 1);
+		
+	}
+		
+	@Test 
+	public void testGetCustomerAccountStausForValidCustomerId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		//Account expectedAccount = new Account(1, "SAVINGS", 5000, 1234, "ACTIVE" , 0, new Transaction(1, 1000, "DEPOSIT"));
+		String expectedStatus= "ACTIVE";
+		String actualStaus = bankingServices.getCustomeAccountStatus(1000, 1);
+		assertEquals(expectedStatus, actualStaus);
+	}
+	
+	@Test(expected=AccountNotFoundException.class)
+	public void testGetCustomerAccountStausForInvalidAccountId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		
+		bankingServices.getAccountDetails(1000, 4545454);
+		
+	}
+		
+	@Test 
+	public void testGetCustomerAccountStatusForValidAccountId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		String expectedStatus= "ACTIVE";
+		String actualStaus = bankingServices.getCustomeAccountStatus(1000, 1);
+		assertEquals(expectedStatus, actualStaus);
+	}
+	
+	@Test(expected=AccountNotFoundException.class)
+	public void testGenerateCustomerAccoutnNewPinForInvalidCustomerId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		
+		bankingServices.getAccountDetails(1089, 1);
+		
+	}
+	
+	
+	@Test(expected=AccountNotFoundException.class)
+	public void testGenerateCustomerAccountNewPinForInvalidAccountId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		
+		bankingServices.getAccountDetails(1000, 16);
+		
+	}
+	
+	@Test 
+	public void testGenerateCustomerAccountNewPinForValidAccountId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		
+		bankingServices.generateCustomerAccountNewPin(1000, 1);
+		
+	}
+	
+	@Test 
+	public void testGenerateCustomerAccountNewPinForValidCustomerId() throws AccountNotFoundException, CustomerNotFoundException, BankingServicesDownException{
+		
+		bankingServices.generateCustomerAccountNewPin(1000, 1);
+		
+	}
+	
+	
+	@After 
+	public void tearDownTestData(){
+		BankingDAOServicesImpl.customers.clear();
+		BankingDAOServicesImpl.accounts.clear();
+		BankingDAOServicesImpl.CUSTOMER_ID_COUNTER=1000;
+		BankingDAOServicesImpl.ACCOUNT_ID_COUNTER=1000;
+	}
+	
+	@AfterClass 
+	public static void  tearDownPayrollServicesq(){
+		bankingServices = null;
+	}
+	
+	
+	
+
+}

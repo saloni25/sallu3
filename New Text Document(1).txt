@@ -1,0 +1,124 @@
+
+	@Test(expected= AccountBlockedException.class)
+	public void testWithdrawAmountForBlockedAccount() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.withdrawAmount(1001, 5444676, 500, 3212);
+	}
+	@Test(expected=CustomerNotFoundException.class)
+	public void testWithdrawAmountForInvalidCustomerId() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.withdrawAmount(1043, 5444676, 500, 3212);
+
+	}
+	@Test(expected=AccountNotFoundException.class)
+	public void testWithdrawAmountForInvalidAccountNo() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.withdrawAmount(1000, 5444996, 500, 3212);
+	}
+
+	@Test
+	public void testWithdrawAmountForValidData() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		Float expectedBalance= 3500f;
+		Float actualBalance=bankServices.withdrawAmount(1000, 5444446, 500, 1111);
+		assertEquals(expectedBalance, actualBalance);
+	}
+	
+	@Test(expected=InvalidPinNumberException.class)
+	public void testWithdrawAmountForInvalidPinNo() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.withdrawAmount(1000, 5444446, 500, 3212);
+	}
+
+	@Test(expected=InsufficientAmountException.class)
+	public void testWithdrawAmountForInsufficientAmount() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.withdrawAmount(1000, 5444446, 50000, 1111);
+	}
+	
+
+
+	@Test(expected= AccountBlockedException.class)
+	public void testDepositAmountForBlockedAccount() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException{
+		bankServices.depositAmount(1076, 5444676, 10000);
+	}
+	@Test(expected=CustomerNotFoundException.class)
+	public void testDepositAmountForInvalidCustomerId() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException{
+		bankServices.depositAmount(1000, 8767565, 10000);
+
+	}
+	@Test(expected=AccountNotFoundException.class)
+	public void testDepositAmountForInvalidAccountNo() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException{
+		bankServices.depositAmount(1001, 5444446, 10000);
+	}
+
+	@Test
+	public void testDepositAmountForValidData() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException{
+		Float expectedBalance= 15000f;
+		Float actualBalance=bankServices.depositAmount(1000, 5444446, 10000);
+		assertEquals(expectedBalance, actualBalance);
+	}
+
+
+	@Test(expected= AccountBlockedException.class)
+	public void testDepositAmountForBlockedAccount() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException{
+		bankServices.depositAmount(1076, 5444676, 10000);
+	}
+	@Test(expected=CustomerNotFoundException.class)
+	public void testDepositAmountForInvalidCustomerId() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException{
+		bankServices.depositAmount(1000, 8767565, 10000);
+
+	}
+	@Test(expected=AccountNotFoundException.class)
+	public void testDepositAmountForInvalidAccountNo() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException{
+		bankServices.depositAmount(1001, 5444446, 10000);
+	}
+
+	@Test
+	public void testDepositAmountForValidData() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException{
+		Float expectedBalance= 15000f;
+		Float actualBalance=bankServices.depositAmount(1000, 5444446, 10000);
+		assertEquals(expectedBalance, actualBalance);
+	}
+
+
+	@Test(expected= AccountBlockedException.class)
+	public void testFundTransferForcustomerIdToBlockedAccount() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.fundTransfer(1002, 5444676, 1000, 756755, 40000, 1234);
+	}
+	@Test(expected=CustomerNotFoundException.class)
+	public void testFundTransferForInvalidCustomerIdTo() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.fundTransfer(1089, 5444676, 1000, 756755, 40000, 1234);
+
+	}
+
+	@Test(expected= AccountBlockedException.class)
+	public void testFundTransferForcustomerIdFromBlockedAccount() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.fundTransfer(1000, 756755, 1002, 5444676, 40000, 1234);
+	}
+	@Test(expected=CustomerNotFoundException.class)
+	public void testFundTransferForInvalidCustomerIdFrom() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.fundTransfer(1000, 5444676, 1098, 756755, 40000, 1234);
+
+	}
+	@Test(expected=AccountNotFoundException.class)
+	public void testFundTransferForInvalidAccountNoTo() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.fundTransfer(1000, 5444654, 1002, 756755, 40000, 1234);
+	}
+	@Test(expected=AccountNotFoundException.class)
+	public void testFundTransferForInvalidAccountNoFrom() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.fundTransfer(1000, 5444446, 1002, 756755, 40000, 1234);
+	}
+
+	@Test(expected=InvalidPinNumberException.class)
+	public void testFundTransferForInvalidPinNo() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.fundTransfer(1000, 5444446, 1002, 544999, 40000, 8765);
+	}
+
+	@Test(expected=InsufficientAmountException.class)
+	public void testFundTransferForInsufficientAmount() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		bankServices.fundTransfer(1000, 5444446, 1002, 544999, 40000, 1234);
+	}
+
+	@Test
+	public void testFundTransferForValidData() throws BankingServicesDownException, CustomerNotFoundException, AccountNotFoundException, InvalidPinNumberException, AccountBlockedException, InsufficientAmountException{
+		boolean expectedResult= true;
+		boolean actualResult=bankServices.fundTransfer(1000, 5444446, 1002, 544999, 2000, 1234);
+		assertEquals(expectedResult, actualResult);
+	}
+
+
